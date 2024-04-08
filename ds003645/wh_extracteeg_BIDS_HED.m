@@ -42,7 +42,8 @@ path2save = fullfile(fileparts(currentPath), 'event-processed');
 % path2save = fullfile(fileparts(fileparts(currentPath)), 'ds117forbids');
 
 dInfo;                              % load dataset information (datInfo)
-addpath('/data/projects/BIDSfiles/eeglab');
+%addpath('/data/projects/BIDSfiles/eeglab');
+addpath('/home/dung/Documents/eeglab');
 [ALLEEG, EEG, CURRENTSET] = eeglab; % start EEGLAB
 
 if ~exist(path2data,'dir'), error('Data folder not found, edit script to indicate data location'); end
@@ -61,11 +62,21 @@ end
 
 
 % Extract EEG data from the FIF file and importing it to EEGLAB
-parfor isubj = 2:length(datInfo)    % Loop accross subjects (Subject 0001 was taken out of the analysis)
+for isubj = 2:length(datInfo)    % Loop accross subjects (Subject 0001 was taken out of the analysis)
     ALLEEG = []; CURRENTSET = 0; % Initializing/clearing variables for each subject in the loop
     
     for irun = 1:6            % Loop accross runs
-        
+	run_filepath = fullfile(path2save,datInfo(isubj).name, 'SET');
+	run_filename = ['ds000117_' datInfo(isubj).name '_run-' num2str(irun) '.set'];
+	fullfile(run_filepath, run_filename)
+	bad_subjects = {'ds000117_sub008_run-6.set', ...
+			'ds000117_sub010_run-5.set', ...
+			'ds000117_sub010_run-6.set', ...
+			'ds000117_sub012_run-5.set'};
+	run_fullpath = fullfile(run_filepath, run_filename);
+        %if exist(run_fullpath, 'file') || any(strcmp(run_filename, bad_subjects))
+		%continue;
+	%end
         % Step 1: Importing data with FileIO
         EEG = pop_fileio(fullfile(path2data, datInfo(isubj).name,'MEG',['run_0' num2str(irun) '_raw.fif']));
         
@@ -96,9 +107,14 @@ parfor isubj = 2:length(datInfo)    % Loop accross subjects (Subject 0001 was ta
                                       
         % Step 3: Adding fiducials and rotating montage. Note:The channel location from this points were extracted from the FIF 
         % files (see below) and written in the dInfo file. The reason is that File-IO does not import these coordinates.
-        EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'LPA' [] [] datInfo(isubj).fid(1,1) datInfo(isubj).fid(1,2) datInfo(isubj).fid(1,3) [] [] [] 'FID' '' [] 0 [] []});
-        EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'Nz'  [] [] datInfo(isubj).fid(2,1) datInfo(isubj).fid(2,2) datInfo(isubj).fid(2,3) [] [] [] 'FID' '' [] 0 [] []});
-        EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'RPA' [] [] datInfo(isubj).fid(3,1) datInfo(isubj).fid(3,2) datInfo(isubj).fid(3,3) [] [] [] 'FID' '' [] 0 [] []});
+	datInfo(isubj)
+	datInfo(isubj).fid
+
+	EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'labels' 'LPA' 'theta' [] 'radius' [] 'X' datInfo(isubj).fid(1,1) 'Y' datInfo(isubj).fid(1,2) 'Z' datInfo(isubj).fid(1,3) 'sph_theta' [] 'sph_phi' [] 'sph_radius' [] 'type' 'FID' 'ref' '' 'urchan' [] 'datachan' 0}); % [] []});
+        EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'labels' 'Nz' 'theta' [] 'radius' [] 'X' datInfo(isubj).fid(2,1) 'Y' datInfo(isubj).fid(2,2) 'Z' datInfo(isubj).fid(2,3) 'sph_theta' [] 'sph_phi' [] 'sph_radius' [] 'type' 'FID' 'ref' '' 'urchan' [] 'datachan' 0}); % [] []});
+        EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'labels' 'RPA' 'theta' [] 'radius' [] 'X' datInfo(isubj).fid(3,1) 'Y' datInfo(isubj).fid(3,2) 'Z' datInfo(isubj).fid(3,3) 'sph_theta' [] 'sph_phi' [] 'sph_radius' [] 'type' 'FID' 'ref' '' 'urchan' [] 'datachan' 0}); % [] []});
+        % EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'Nz'  [] [] datInfo(isubj).fid(2,1) datInfo(isubj).fid(2,2) datInfo(isubj).fid(2,3) [] [] [] 'FID' '' [] 0 [] []});
+        % EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'RPA' [] [] datInfo(isubj).fid(3,1) datInfo(isubj).fid(3,2) datInfo(isubj).fid(3,3) [] [] [] 'FID' '' [] 0 [] []});
         EEG = pop_chanedit(EEG,'nosedir','+Y'); % Originally commented out
         
         % Changing Channel types and removing channel locations for channels 61-64 (Raw data types are incorrect)
