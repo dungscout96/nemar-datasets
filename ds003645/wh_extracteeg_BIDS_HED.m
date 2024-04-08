@@ -99,7 +99,7 @@ parfor isubj = 2:length(datInfo)    % Loop accross subjects (Subject 0001 was ta
         EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'LPA' [] [] datInfo(isubj).fid(1,1) datInfo(isubj).fid(1,2) datInfo(isubj).fid(1,3) [] [] [] 'FID' '' [] 0 [] []});
         EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'Nz'  [] [] datInfo(isubj).fid(2,1) datInfo(isubj).fid(2,2) datInfo(isubj).fid(2,3) [] [] [] 'FID' '' [] 0 [] []});
         EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'RPA' [] [] datInfo(isubj).fid(3,1) datInfo(isubj).fid(3,2) datInfo(isubj).fid(3,3) [] [] [] 'FID' '' [] 0 [] []});
-        %EEG = pop_chanedit(EEG,'nosedir','+Y'); % Not used here
+        EEG = pop_chanedit(EEG,'nosedir','+Y'); % Originally commented out
         
         % Changing Channel types and removing channel locations for channels 61-64 (Raw data types are incorrect)
         EEG = pop_chanedit(EEG,'changefield',{find(strcmp({EEG.chanlocs.labels}, 'EEG061'))  'type' 'HEOG'  'X'  []  'Y'  []  'Z'  []  'theta'  []  'radius'  []  'sph_theta'  []  'sph_phi'  []  'sph_radius'  []});
