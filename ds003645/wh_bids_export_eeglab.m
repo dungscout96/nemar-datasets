@@ -273,4 +273,3 @@ tInfo.RecordingType = 'continuous';
 bids_export(subject, 'targetdir', path2bids, 'eInfo', eInfo, 'taskName', tInfo.TaskName, 'gInfo', generalInfo, 'pInfo', pInfo, 'pInfoDesc', pInfoDesc, 'README', README, 'CHANGES', CHANGES,'tInfo', tInfo,'codefiles',codefiles,'defaced', defacedflag,'anattype', anattype, 'copydata', 0);
 copyfile(path2stimfiles, fullfile(path2bids, 'stimuli'));
 
-
